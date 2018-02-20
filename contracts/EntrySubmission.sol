@@ -2,6 +2,7 @@ pragma solidity ^0.4.17;
 
 contract EntrySubmission {
   uint constant entryFee = 10*1000000000 wei; // 10 Gwei
+  address constant trustedScorer = 0x627306090abaB3A6e1400e9345bC60c78a8BEf57;
 
   struct Entry {
     uint entryHash;
@@ -30,7 +31,7 @@ contract EntrySubmission {
 
   function submitRewards(address[] entrants, uint[] rewards) public {
     // Predetermined multi-sig wallet
-    require(msg.sender == 0x627306090abaB3A6e1400e9345bC60c78a8BEf57);
+    require(msg.sender == trustedScorer);
 
     require(entrants.length == rewards.length);
 
