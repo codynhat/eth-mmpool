@@ -66,6 +66,8 @@ contract('EntrySubmission', accounts => {
   })
 
   it("should submit rewards", () => {
+    web3.currentProvider.send({jsonrpc: "2.0", method: "evm_increaseTime", params: [10000000], id: 0})
+    
     let account = accounts[0]
     return EntrySubmission.deployed().then(instance => {
       return instance.submitRewards(accounts, [10, 9, 8, 7, 6, 5, 4, 3, 2, 1], {from: account})
@@ -81,6 +83,8 @@ contract('EntrySubmission', accounts => {
   })
 
   it("should not submit rewards on bad sender", () => {
+    web3.currentProvider.send({jsonrpc: "2.0", method: "evm_increaseTime", params: [10000000], id: 0})
+
     let account = accounts[1]
     return EntrySubmission.deployed().then(instance => {
       return instance.submitRewards(accounts, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], {from: accounts[0]})
@@ -94,6 +98,23 @@ contract('EntrySubmission', accounts => {
               assert.equal(entry[2].toNumber(), 0, "reward not equal to 0")
             })
         })
+    })
+  })
+
+  it("should withdraw reward", () => {
+    web3.currentProvider.send({jsonrpc: "2.0", method: "evm_increaseTime", params: [10000000], id: 0})
+
+    let account = accounts[4]
+    let startingContractBalance = web3.eth.getBalance(EntrySubmission.address)
+    let startingAccountBalance = web3.eth.getBalance(account)
+    return EntrySubmission.deployed().then(instance => {
+      return instance.submitRewards([account], [web3.toWei(100, "gwei")], {from: accounts[0]})
+        .then(() => instance.withdrawReward({from: account, gasPrice: 0}))
+    }).then(res => {
+      let newContractBalance = web3.eth.getBalance(EntrySubmission.address)
+      let newAccountBalance = web3.eth.getBalance(account)
+      assert.deepEqual(startingContractBalance.minus(newContractBalance), newAccountBalance.minus(startingAccountBalance))
+      assert.equal(web3.toWei(100, "gwei"), newAccountBalance.minus(startingAccountBalance).toString())
     })
   })
 
