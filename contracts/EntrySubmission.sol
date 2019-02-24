@@ -1,10 +1,10 @@
 pragma solidity ^0.4.17;
 
 contract EntrySubmission {
-  uint constant entryFee = 10*1000000000 wei; // 10 Gwei
+  uint constant entryFee = 1000000000 wei; // 1 Gwei per bracket
   address constant trustedScorer = 0x627306090abaB3A6e1400e9345bC60c78a8BEf57;
-  uint constant entryStopEpoch = 1521126000; // Valid entry submission time. before March 15, 2018 8:00AM PST
-  uint constant rewardStartEpoch = 1522738800; // Valid reward submission time. after April 3, 2018 12:00AM PST
+  uint constant entryStopEpoch = 1553180400; // Valid entry submission time. before March 21, 2019 8:00AM PST
+  uint constant rewardStartEpoch = 1554793200; // Valid reward submission time. after April 9, 2019 12:00AM PST
 
   struct Entry {
     uint entryHash;

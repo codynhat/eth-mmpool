@@ -3,7 +3,7 @@ var EntrySubmission = artifacts.require("EntrySubmission");
 contract('EntrySubmission', accounts => {
 
   it("should write entry with exactly sufficient entry fee", () => {
-    let fee = web3.toWei(100, "gwei")
+    let fee = web3.toWei(10, "gwei")
     let account = accounts[0]
     let startingBalance = web3.eth.getBalance(EntrySubmission.address)
     return EntrySubmission.deployed().then(instance => {
@@ -20,7 +20,7 @@ contract('EntrySubmission', accounts => {
   })
 
   it("should write entry with too high entry fee", () => {
-    let fee = web3.toWei(1000, "gwei")
+    let fee = web3.toWei(100, "gwei")
     let account = accounts[1]
     let startingBalance = web3.eth.getBalance(EntrySubmission.address)
     return EntrySubmission.deployed().then(instance => {
@@ -37,7 +37,7 @@ contract('EntrySubmission', accounts => {
   })
 
   it("should fail entry with too low entry fee", () => {
-    let fee = web3.toWei(1, "gwei")
+    let fee = web3.toWei(0.1, "gwei")
     let account = accounts[2]
     let startingBalance = web3.eth.getBalance(EntrySubmission.address)
     return EntrySubmission.deployed().then(instance => {
@@ -51,7 +51,7 @@ contract('EntrySubmission', accounts => {
   })
 
   it("should fail entry if already exists", () => {
-    let fee = web3.toWei(100, "gwei")
+    let fee = web3.toWei(10, "gwei")
     let account = accounts[3]
     let startingBalance = web3.eth.getBalance(EntrySubmission.address)
     return EntrySubmission.deployed().then(instance => {
@@ -67,7 +67,7 @@ contract('EntrySubmission', accounts => {
 
   it("should submit rewards", () => {
     web3.currentProvider.send({jsonrpc: "2.0", method: "evm_increaseTime", params: [10000000], id: 0})
-    
+
     let account = accounts[0]
     return EntrySubmission.deployed().then(instance => {
       return instance.submitRewards(accounts, [10, 9, 8, 7, 6, 5, 4, 3, 2, 1], {from: account})
