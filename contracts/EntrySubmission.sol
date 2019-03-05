@@ -7,7 +7,9 @@ contract EntrySubmission {
   uint constant rewardStartEpoch = 1554793200; // Valid reward submission time. after April 9, 2019 12:00AM PST
 
   struct Entry {
-    uint entryHash;
+    bytes32 multihash_digest;
+    uint8 multihash_hashFunction;
+    uint8 multihash_size;
     uint bracketCount;
     uint reward;
     bool exists;
@@ -17,7 +19,7 @@ contract EntrySubmission {
 
   mapping (address => Entry) public entries;
 
-  function submitEntry(uint entryHash, uint bracketCount) public payable {
+  function submitEntry(bytes32 _digest, uint8 _hashFunction, uint8 _size, uint bracketCount) public payable {
     // Is entry fee sufficient?
     require(msg.value >= (entryFee * bracketCount));
 
@@ -26,8 +28,8 @@ contract EntrySubmission {
 
     require(now < entryStopEpoch);
 
-    entries[msg.sender] = Entry(entryHash, bracketCount, 0, true);
-    EntrySubmitted(msg.sender);
+    entries[msg.sender] = Entry(_digest, _hashFunction, _size, bracketCount, 0, true);
+    emit EntrySubmitted(msg.sender);
   }
 
   function submitRewards(address[] entrants, uint[] rewards) public {
