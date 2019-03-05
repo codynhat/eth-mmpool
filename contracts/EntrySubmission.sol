@@ -23,9 +23,6 @@ contract EntrySubmission {
     // Is entry fee sufficient?
     require(msg.value >= (entryFee * bracketCount));
 
-    // Fail to overwrite entry
-    require(entries[msg.sender].exists == false);
-
     require(now < entryStopEpoch);
 
     entries[msg.sender] = Entry(_digest, _hashFunction, _size, bracketCount, 0, true);

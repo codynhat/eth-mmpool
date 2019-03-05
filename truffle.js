@@ -8,7 +8,7 @@ module.exports = {
       network_id: "*" // Match any network id
     },
     kovan: {
-      provider: () => new HDWalletProvider("<insert wallet seed phrase>", "<insert kovan creds>", 1),
+      provider: () => new HDWalletProvider("", "", 1),
       network_id: "42", // Match any network id
       gas: 4700000
     }

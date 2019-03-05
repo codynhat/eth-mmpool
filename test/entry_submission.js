@@ -3,6 +3,7 @@ var EntrySubmission = artifacts.require("EntrySubmission");
 contract('EntrySubmission', accounts => {
 
   const digest = "0x527a53913847f59716da788fa156e65f41c2320768181c0b1a8f88dcaa68183d"
+  const digest1 = "0x327a53913847f59716da788fa156e65f41c2320768181c0b1a8f88dcaa68183d"
 
   it("should write entry with exactly sufficient entry fee", () => {
     let fee = web3.toWei(10, "gwei")
@@ -56,18 +57,24 @@ contract('EntrySubmission', accounts => {
     })
   })
 
-  it("should fail entry if already exists", () => {
+  it("should overwrite entry if already exists", () => {
     let fee = web3.toWei(10, "gwei")
     let account = accounts[3]
     let startingBalance = web3.eth.getBalance(EntrySubmission.address)
     return EntrySubmission.deployed().then(instance => {
       return instance.submitEntry(digest, 18, 32, 10, {from: account, value: fee})
-        .then(() => instance.submitEntry(digest, 18, 32, 10, {from: account, value: fee}))
-    }).catch(err => {
-      assert.isNotNull(err, "Expected error but none was found")
-    }).then(() => {
+        .then(() => instance.submitEntry(digest1, 18, 32, 10, {from: account, value: fee}))
+        .then(result => {
+          assert.equal(result.logs[0].args.entrant, account, "Account does not match event")
+          return instance.entries.call(account)
+        })
+    }).then((entry) => {
+      assert.equal(entry[0], digest1, "entryHash digest not saved")
+      assert.equal(entry[1].toNumber(), 18, "entryHash algo not saved")
+      assert.equal(entry[2].toNumber(), 32, "entryHash size not saved")
+      assert.equal(entry[3].toNumber(), 10, "bracketCount not saved")
       let newBalance = web3.eth.getBalance(EntrySubmission.address)
-      assert.deepEqual(startingBalance.plus(fee), newBalance)
+      assert.deepEqual(startingBalance.plus(fee).plus(fee), newBalance)
     })
   })
 
